@@ -5,6 +5,13 @@ from services.sheets import players, history
 from datetime import datetime
 import pytz
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+TOKEN = os.getenv("DISCORD_TOKEN")
+
 kyiv = pytz.timezone("Europe/Kyiv")
 
 VALID_CLASSES = [
@@ -533,4 +540,3 @@ async def remind(ctx):
 
     await ctx.send(message)
 
-bot.run("MTQ3OTgzNTk2NzA5ODcyMDMyNg.GWM6yc.S4mq3x4TWQF9HnsTaj8LUqPE8rfKKYD3ic4j3Q")
