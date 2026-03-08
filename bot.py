@@ -76,7 +76,21 @@ async def register(ctx, nick, player_class):
         str(datetime.now())
     ])
 
-    await ctx.send(f"{nick} registered as {player_class}")
+    # змінюємо нік у Discord
+    try:
+        await ctx.author.edit(nick=nick)
+    except:
+        pass
+
+    await ctx.send(
+f"""{ctx.author.mention}
+
+✅ Ти успішно зареєструвався як **{player_class}**
+
+Щоб внести свої стати напиши їх чітко за командою:
+!update РЕЗО БР БРОНЯ ПРОБИВ МІЦЬ РЕЗІСТ"""
+)
+
 @bot.command()
 async def changeclass(ctx, new_class):
 
