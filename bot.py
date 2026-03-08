@@ -26,6 +26,57 @@ VALID_CLASSES = [
     "Druid"
 ]
 
+
+CLASS_ALIASES = {
+
+# BARBARIAN
+"barb":"Barbarian",
+"barbarian":"Barbarian",
+"barbar":"Barbarian",
+"barbari":"Barbarian",
+
+# DEMON HUNTER
+"dh":"DemonHunter",
+"demonhunter":"DemonHunter",
+"demon_hunter":"DemonHunter",
+"demon-hunter":"DemonHunter",
+"demon hunter":"DemonHunter",
+
+# NECROMANCER
+"necro":"Necromancer",
+"necromancer":"Necromancer",
+"necrom":"Necromancer",
+
+# WIZARD
+"wiz":"Wizard",
+"wizard":"Wizard",
+"mage":"Wizard",
+
+# CRUSADER
+"crus":"Crusader",
+"crusader":"Crusader",
+"sader":"Crusader",
+
+# MONK
+"monk":"Monk",
+
+# BLOOD KNIGHT
+"bk":"BloodKnight",
+"bloodknight":"BloodKnight",
+"blood_knight":"BloodKnight",
+"blood-knight":"BloodKnight",
+"blood knight":"BloodKnight",
+
+# DRUID
+"druid":"Druid",
+
+# TEMPEST
+"temp":"Tempest",
+"tempest":"Tempest",
+"tempes":"Tempest"
+
+}
+
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -45,11 +96,25 @@ async def grill(ctx):
 @bot.command()
 async def register(ctx, nick, player_class):
 
-    player_class = player_class.capitalize()
+    player_class = player_class.lower()
 
-    if player_class not in VALID_CLASSES:
+    if player_class in CLASS_ALIASES:
+        player_class = CLASS_ALIASES[player_class]
+    else:
         await ctx.send(
-            f"Invalid class.\nChoose one of:\n{', '.join(VALID_CLASSES)}"
+            """❌ Невідомий клас.
+
+Спробуй один із варіантів:
+
+Barbarian → barb
+DemonHunter → dh
+Necromancer → necro
+Wizard → wiz
+Crusader → crus
+Monk → monk
+BloodKnight → bk
+Druid → druid
+Tempest → temp"""
         )
         return
 
@@ -96,15 +161,28 @@ f"""{ctx.author.mention}
 !update РЕЗО БР БРОНЯ ПРОБИВ МІЦЬ РЕЗІСТ"""
     )
 
-
 @bot.command()
 async def changeclass(ctx, new_class):
 
-    new_class = new_class.capitalize()
+    new_class = new_class.lower()
 
-    if new_class not in VALID_CLASSES:
+    if new_class in CLASS_ALIASES:
+        new_class = CLASS_ALIASES[new_class]
+    else:
         await ctx.send(
-            f"Invalid class.\nChoose one of:\n{', '.join(VALID_CLASSES)}"
+            """❌ Невідомий клас.
+
+Спробуй один із варіантів:
+
+Barbarian → barb
+DemonHunter → dh
+Necromancer → necro
+Wizard → wiz
+Crusader → crus
+Monk → monk
+BloodKnight → bk
+Druid → druid
+Tempest → temp"""
         )
         return
 
@@ -121,10 +199,13 @@ async def changeclass(ctx, new_class):
                 [[new_class]]
             )
 
-            await ctx.send(f"Class updated to {new_class}")
+            await ctx.send(
+                f"{ctx.author.mention}\n\n✅ Твій клас змінено на **{new_class}**"
+            )
+
             return
 
-    await ctx.send("You are not registered")
+    await ctx.send("⚠ Ти ще не зареєстрований. Використай !register ТвійНік ТвійКлас")
 
 @bot.command()
 async def update(ctx, resonance:int, cr:int, armor:int, armorpen:int, potency:int, resistance:int):
