@@ -130,16 +130,22 @@ async def changeclass(ctx, new_class):
 async def update(ctx, resonance:int, cr:int, armor:int, armorpen:int, potency:int, resistance:int):
 
     discord_id = str(ctx.author.id)
-
     rows = players.get_all_records()
 
-    for i, row in enumerate(rows, start=2):
+    for i,row in enumerate(rows,start=2):
 
         if str(row["DiscordID"]).split(".")[0] == discord_id:
 
+            old_res = int(row["Resonance"])
+            old_cr = int(row["CR"])
+            old_armor = int(row["Armor"])
+            old_armorpen = int(row["ArmorPenetration"])
+            old_pot = int(row["Potency"])
+            old_resist = int(row["Resistance"])
+
             players.update(
-                [[resonance, cr, armor, armorpen, potency, resistance, str(datetime.now())]],
-                f"D{i}:J{i}"
+                f"D{i}:I{i}",
+                [[resonance,cr,armor,armorpen,potency,resistance]]
             )
 
             history.append_row([
@@ -155,10 +161,34 @@ async def update(ctx, resonance:int, cr:int, armor:int, armorpen:int, potency:in
                 resistance
             ])
 
-            await ctx.send("Stats updated")
+            diff_res = resonance - old_res
+            diff_cr = cr - old_cr
+            diff_armor = armor - old_armor
+            diff_armorpen = armorpen - old_armorpen
+            diff_pot = potency - old_pot
+            diff_resist = resistance - old_resist
+
+            await ctx.send(
+f"""{ctx.author.mention}
+
+📊 Стати успішно оновлено
+
+⚔ Resonance: **{resonance}** {"(+"+str(diff_res)+")" if diff_res>0 else ""}
+🛡 CR: **{cr}** {"(+"+str(diff_cr)+")" if diff_cr>0 else ""}
+🪖 Armor: **{armor}** {"(+"+str(diff_armor)+")" if diff_armor>0 else ""}
+⚔ Armor Penetration: **{armorpen}** {"(+"+str(diff_armorpen)+")" if diff_armorpen>0 else ""}
+💪 Potency: **{potency}** {"(+"+str(diff_pot)+")" if diff_pot>0 else ""}
+🛡 Resistance: **{resistance}** {"(+"+str(diff_resist)+")" if diff_resist>0 else ""}
+
+📌 Корисні команди
+!me — переглянути свої стати
+!leaderboards — подивитися топ гравців
+"""
+            )
+
             return
 
-    await ctx.send("You are not registered")
+    await ctx.send("Ти ще не зареєстрований. Використай !register ТвійНік ТвійКлас")
 
 @bot.command()
 async def me(ctx):
