@@ -57,11 +57,18 @@ async def register(ctx, nick, player_class):
 
     rows = players.get_all_records()
 
-    # перевірка чи вже зареєстрований
-    for row in rows:
-        if str(row["DiscordID"]).split(".")[0] == discord_id:
-            await ctx.send("You are already registered. Use !update to update your stats.")
-            return
+   # перевірка чи вже зареєстрований
+for row in rows:
+    if str(row["DiscordID"]).split(".")[0] == discord_id:
+        await ctx.send(
+f"""{ctx.author.mention}
+
+⚠ Ти вже зареєстрований.
+
+Щоб внести свої стати напиши їх чітко за командою:
+!update РЕЗО БР БРОНЯ ПРОБИВ МІЦЬ РЕЗІСТ"""
+        )
+        return
 
     players.append_row([
         discord_id,
