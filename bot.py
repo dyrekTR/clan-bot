@@ -88,7 +88,7 @@ try:
 except:
     pass
 
-await ctx.send(
+    await ctx.send(
 f"""{ctx.author.mention}
 
 ✅ Ти успішно зареєструвався як **{player_class}**
