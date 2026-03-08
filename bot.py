@@ -274,51 +274,114 @@ Resistance: **#{rank_resist}**
             return
 
     await ctx.send("Ти ще не зареєстрований. Використай !register ТвійКлас ТвійНік")
+
 @bot.command()
 async def me(ctx):
 
     discord_id = str(ctx.author.id)
-
     rows = players.get_all_records()
 
     for row in rows:
 
         if str(row["DiscordID"]).split(".")[0] == discord_id:
 
-            message = (
-                f"Nick: {row['Nick']}\n"
-                f"Class: {row['Class']}\n"
-                f"CR: {row['CR']}\n"
-                f"Resonance: {row['Resonance']}\n"
-                f"Armor: {row['Armor']}\n"
-                f"ArmorPenetration: {row['ArmorPenetration']}\n"
-                f"Potency: {row['Potency']}\n"
-                f"Resistance: {row['Resistance']}"
+            resonance = int(row["Resonance"])
+            cr = int(row["CR"])
+            armor = int(row["Armor"])
+            armorpen = int(row["ArmorPenetration"])
+            potency = int(row["Potency"])
+            resistance = int(row["Resistance"])
+
+            rows = players.get_all_records()
+
+            def get_rank(stat):
+                sorted_players = sorted(rows, key=lambda x: int(x[stat]), reverse=True)
+                for index, player in enumerate(sorted_players, start=1):
+                    if str(player["DiscordID"]).split(".")[0] == discord_id:
+                        return index
+
+            rank_res = get_rank("Resonance")
+            rank_cr = get_rank("CR")
+            rank_armor = get_rank("Armor")
+            rank_armorpen = get_rank("ArmorPenetration")
+            rank_pot = get_rank("Potency")
+            rank_resist = get_rank("Resistance")
+
+            from datetime import timedelta
+
+            week_ago = datetime.now() - timedelta(days=7)
+            history_rows = history.get_all_records()
+
+            growth_scores = {}
+
+            for h in history_rows:
+
+                try:
+                    record_date = datetime.fromisoformat(h["Date"])
+                except:
+                    continue
+
+                if record_date >= week_ago:
+
+                    player = str(h["DiscordID"])
+
+                    score = (
+                        int(h["Resonance"]) +
+                        int(h["CR"]) +
+                        int(h["Armor"]) +
+                        int(h["ArmorPenetration"]) +
+                        int(h["Potency"]) +
+                        int(h["Resistance"])
+                    )
+
+                    if player not in growth_scores:
+                        growth_scores[player] = 0
+
+                    growth_scores[player] += score
+
+            sorted_growth = sorted(growth_scores.items(), key=lambda x: x[1], reverse=True)
+
+            growth_rank = 1
+
+            for idx,(player,score) in enumerate(sorted_growth,start=1):
+                if player == discord_id:
+                    growth_rank = idx
+                    break
+
+            await ctx.send(
+f"""{ctx.author.mention}
+
+📊 Твої поточні стати
+
+⚔ Resonance: **{resonance}**
+🛡 CR: **{cr}**
+🪖 Armor: **{armor}**
+⚔ Armor Penetration: **{armorpen}**
+💪 Potency: **{potency}**
+🛡 Resistance: **{resistance}**
+
+🏆 Твої позиції в клані
+
+Resonance: **#{rank_res}**
+CR: **#{rank_cr}**
+Armor: **#{rank_armor}**
+Armor Penetration: **#{rank_armorpen}**
+Potency: **#{rank_pot}**
+Resistance: **#{rank_resist}**
+
+🔥 Рейтинг росту за 7 днів
+Твоя позиція: **#{growth_rank}**
+
+📌 Корисні команди
+!update — оновити стати
+!leaderboards — подивитися топ гравців
+!help
+"""
             )
 
-            await ctx.send(message)
             return
 
-    await ctx.send("You are not registered")
-
-
-
-async def send_top(ctx, stat_name, title):
-
-    rows = players.get_all_records()
-
-    sorted_players = sorted(
-        rows,
-        key=lambda x: int(x[stat_name]),
-        reverse=True
-    )
-
-    message = f"{title}\n\n"
-
-    for i, player in enumerate(sorted_players[:10], start=1):
-        message += f"{i}. {player['Nick']} — {player[stat_name]}\n"
-
-    await ctx.send(message)
+    await ctx.send("Ти ще не зареєстрований. Використай !register ТвійНік ТвійКлас")
 
 @bot.command()
 async def topcr(ctx):
