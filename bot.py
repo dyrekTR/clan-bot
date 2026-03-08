@@ -57,7 +57,7 @@ async def register(ctx, nick, player_class):
 
     rows = players.get_all_records()
 
-   # перевірка чи вже зареєстрований
+# перевірка чи вже зареєстрований
 for row in rows:
     if str(row["DiscordID"]).split(".")[0] == discord_id:
         await ctx.send(
@@ -70,26 +70,25 @@ f"""{ctx.author.mention}
         )
         return
 
-    players.append_row([
-        discord_id,
-        nick,
-        player_class,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        str(datetime.now())
-    ])
+players.append_row([
+    discord_id,
+    nick,
+    player_class,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    str(datetime.now())
+])
 
-    # змінюємо нік у Discord
-    try:
-        await ctx.author.edit(nick=nick)
-    except:
-        pass
+try:
+    await ctx.author.edit(nick=nick)
+except:
+    pass
 
-    await ctx.send(
+await ctx.send(
 f"""{ctx.author.mention}
 
 ✅ Ти успішно зареєструвався як **{player_class}**
