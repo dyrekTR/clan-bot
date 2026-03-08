@@ -54,39 +54,38 @@ async def register(ctx, nick, player_class):
         return
 
     discord_id = str(ctx.author.id)
-
     rows = players.get_all_records()
 
-# перевірка чи вже зареєстрований
-for row in rows:
-    if str(row["DiscordID"]).split(".")[0] == discord_id:
-        await ctx.send(
+    # перевірка чи вже зареєстрований
+    for row in rows:
+        if str(row["DiscordID"]).split(".")[0] == discord_id:
+            await ctx.send(
 f"""{ctx.author.mention}
 
 ⚠ Ти вже зареєстрований.
 
 Щоб внести свої стати напиши їх чітко за командою:
 !update РЕЗО БР БРОНЯ ПРОБИВ МІЦЬ РЕЗІСТ"""
-        )
-        return
+            )
+            return
 
-players.append_row([
-    discord_id,
-    nick,
-    player_class,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    str(datetime.now())
-])
+    players.append_row([
+        discord_id,
+        nick,
+        player_class,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        str(datetime.now())
+    ])
 
-try:
-    await ctx.author.edit(nick=nick)
-except:
-    pass
+    try:
+        await ctx.author.edit(nick=nick)
+    except:
+        pass
 
     await ctx.send(
 f"""{ctx.author.mention}
@@ -95,7 +94,8 @@ f"""{ctx.author.mention}
 
 Щоб внести свої стати напиши їх чітко за командою:
 !update РЕЗО БР БРОНЯ ПРОБИВ МІЦЬ РЕЗІСТ"""
-)
+    )
+
 
 @bot.command()
 async def changeclass(ctx, new_class):
