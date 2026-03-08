@@ -348,7 +348,7 @@ Resistance: **#{rank_resist}**
 
 📌 Корисні команди
 !me — переглянути свої стати
-!leaderboards — подивитися топ гравців
+!leaderboard — подивитися топ гравців
 """
             )
 
@@ -455,7 +455,7 @@ Resistance: **#{rank_resist}**
 
 📌 Корисні команди
 !update — оновити стати
-!leaderboards — подивитися топ гравців
+!leaderboard — подивитися топ гравців
 !help
 """
             )
