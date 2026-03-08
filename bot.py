@@ -168,6 +168,76 @@ async def update(ctx, resonance:int, cr:int, armor:int, armorpen:int, potency:in
             diff_pot = potency - old_pot
             diff_resist = resistance - old_resist
 
+            total_growth = (
+                max(diff_res,0) +
+                max(diff_cr,0) +
+                max(diff_armor,0) +
+                max(diff_armorpen,0) +
+                max(diff_pot,0) +
+                max(diff_resist,0)
+            )
+
+            rows = players.get_all_records()
+
+            def get_rank(stat):
+                sorted_players = sorted(rows, key=lambda x: int(x[stat]), reverse=True)
+                for index, player in enumerate(sorted_players, start=1):
+                    if str(player["DiscordID"]).split(".")[0] == discord_id:
+                        return index
+
+            rank_res = get_rank("Resonance")
+            rank_cr = get_rank("CR")
+            rank_armor = get_rank("Armor")
+            rank_armorpen = get_rank("ArmorPenetration")
+            rank_pot = get_rank("Potency")
+            rank_resist = get_rank("Resistance")
+
+            from datetime import timedelta
+
+            week_ago = datetime.now() - timedelta(days=7)
+            history_rows = history.get_all_records()
+
+            growth_scores = {}
+
+            for h in history_rows:
+
+                try:
+                    record_date = datetime.fromisoformat(h["Date"])
+                except:
+                    continue
+
+                if record_date >= week_ago:
+
+                    player = str(h["DiscordID"])
+
+                    score = (
+                        int(h["Resonance"]) +
+                        int(h["CR"]) +
+                        int(h["Armor"]) +
+                        int(h["ArmorPenetration"]) +
+                        int(h["Potency"]) +
+                        int(h["Resistance"])
+                    )
+
+                    if player not in growth_scores:
+                        growth_scores[player] = 0
+
+                    growth_scores[player] += score
+
+            if discord_id not in growth_scores:
+                growth_scores[discord_id] = 0
+
+            growth_scores[discord_id] += total_growth
+
+            sorted_growth = sorted(growth_scores.items(), key=lambda x: x[1], reverse=True)
+
+            growth_rank = 1
+
+            for idx,(player,score) in enumerate(sorted_growth,start=1):
+                if player == discord_id:
+                    growth_rank = idx
+                    break
+
             await ctx.send(
 f"""{ctx.author.mention}
 
@@ -180,6 +250,21 @@ f"""{ctx.author.mention}
 💪 Potency: **{potency}** {"(+"+str(diff_pot)+")" if diff_pot>0 else ""}
 🛡 Resistance: **{resistance}** {"(+"+str(diff_resist)+")" if diff_resist>0 else ""}
 
+🏆 Твої позиції в клані
+
+Resonance: **#{rank_res}**
+CR: **#{rank_cr}**
+Armor: **#{rank_armor}**
+Armor Penetration: **#{rank_armorpen}**
+Potency: **#{rank_pot}**
+Resistance: **#{rank_resist}**
+
+📈 Твій приріст сьогодні
+**+{total_growth}**
+
+🔥 Рейтинг росту за 7 днів
+Твоя позиція: **#{growth_rank}**
+
 📌 Корисні команди
 !me — переглянути свої стати
 !leaderboards — подивитися топ гравців
@@ -188,8 +273,7 @@ f"""{ctx.author.mention}
 
             return
 
-    await ctx.send("Ти ще не зареєстрований. Використай !register ТвійНік ТвійКлас")
-
+    await ctx.send("Ти ще не зареєстрований. Використай !register ТвійКлас ТвійНік")
 @bot.command()
 async def me(ctx):
 
