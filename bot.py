@@ -554,3 +554,4 @@ async def remind(ctx):
 
     await ctx.send(message)
 
+bot.run(TOKEN)
